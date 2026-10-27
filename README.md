@@ -3,7 +3,8 @@
 A tested, secured, observable e-commerce API with asynchronous order processing,
 semantic product search, and a production deployment path.
 
-Stages 0–1 provide a strict TypeScript foundation and an isolated native HTTP server.
+Stages 0–2 provide a strict TypeScript foundation, isolated native HTTP server,
+and fault-tolerant typed async data engine.
 
 ## Local setup
 
@@ -56,3 +57,25 @@ curl -i http://127.0.0.1:3000/missing
 In Postman, use the same URLs and GET method. Responses use
 `application/json; charset=utf-8`. Native server factories do not listen until
 started, so tests use ephemeral local ports and close their listeners afterward.
+
+## Typed async aggregation (stage 2)
+
+```sh
+npm run data:aggregate
+```
+
+The example concurrently requests JSONPlaceholder's public `/users` and `/posts`
+endpoints. It prints `{ users, posts, errors }` and exits nonzero when a source
+fails. Valid sources survive failures in other sources. Errors identify the source,
+URL, code, message and HTTP status when available.
+
+`aggregatePublicData(fetchClient?, options?)` accepts an injected client and
+`usersUrl`, `postsUrl`, `timeoutMs` options. Timeout defaults to 5 seconds.
+Injected clients must honor the supplied AbortSignal, as native fetch does.
+The engine validates unknown JSON and maps only explicit domain fields; a malformed
+source is rejected as a unit. Non-success HTTP bodies are canceled to release
+connections. Tests use injected fixtures and do not call live public APIs.
+
+Increasing `UV_THREADPOOL_SIZE` does not accelerate native fetch/network I/O.
+No thread-pool benchmark is included because this work is network-bound rather
+than a libuv thread-pool workload.

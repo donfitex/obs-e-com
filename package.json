@@ -15,7 +15,8 @@
     "build": "tsc -p tsconfig.build.json",
     "check": "npm run typecheck && npm test && npm run build",
     "dev:native": "node --env-file-if-exists=.env --import tsx --watch src/native/index.ts",
-    "start:native": "node --env-file-if-exists=.env dist/native/index.js"
+    "start:native": "node --env-file-if-exists=.env dist/native/index.js",
+    "data:aggregate": "tsx src/aggregation/example.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
