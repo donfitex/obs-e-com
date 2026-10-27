@@ -20,6 +20,8 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
     });
+    assert.ok(child.stdout);
+    assert.ok(child.stderr);
     let stderr = '';
     child.stdout.resume();
     child.stderr.setEncoding('utf8');
