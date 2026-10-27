@@ -22,4 +22,4 @@ curl and Postman examples.
 
 The original license and ignore rules remain intact. Local git status could not
 be captured because this chat has no execution workspace; repository state and
-history were inspected through GitHub. See [reconnaissance](reconnaissance.md).
+history were inspected through GitHub.
