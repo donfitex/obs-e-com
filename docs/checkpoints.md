@@ -8,4 +8,5 @@ The preparation workflow is removed after it generates the dependency locks.
 | --- | --- | --- |
 | 0 | chore: initialize typed backend project foundation | [npm ci, typecheck, tests, build passed](https://github.com/donfitex/obs-e-com/actions/runs/40476002918) |
 | 1 | feat: add native HTTP server and health endpoint | [npm ci, typecheck, tests, build passed](https://github.com/donfitex/obs-e-com/actions/runs/40476520535) |
-| 2 | feat: add strict async data aggregation engine | Check the Backend checks run for this commit before advancing |
+| 2 | feat: add strict async data aggregation engine | [npm ci, typecheck, tests, build passed](https://github.com/donfitex/obs-e-com/actions/runs/40476793021) |
+| 3 | feat: structure Express API with observable CRUD routes | Check the Backend checks run for this commit |

@@ -3,8 +3,8 @@
 A tested, secured, observable e-commerce API with asynchronous order processing,
 semantic product search, and a production deployment path.
 
-Stages 0–2 provide a strict TypeScript foundation, isolated native HTTP server,
-and fault-tolerant typed async data engine.
+Stages 0–3 provide a strict TypeScript foundation, an isolated native HTTP server,
+a fault-tolerant async data engine, and an observable Express API with mock user CRUD.
 
 ## Local setup
 
@@ -18,7 +18,7 @@ npm run dev
 ```
 
 The environment file is optional. Defaults: `HOST=127.0.0.1`, `PORT=3000`.
-The default entry point starts the native HTTP server.
+The default entry point starts the Express API. The native learning server has separate scripts.
 Do not commit real credentials; local environment files are ignored.
 
 ```sh
@@ -79,3 +79,52 @@ connections. Tests use injected fixtures and do not call live public APIs.
 Increasing `UV_THREADPOOL_SIZE` does not accelerate native fetch/network I/O.
 No thread-pool benchmark is included because this work is network-bound rather
 than a libuv thread-pool workload.
+
+## Express API (stage 3)
+
+`npm run dev` starts Express. Production-style local startup is
+`npm run build` followed by `npm start`. The native server remains available
+through `npm run dev:native` and `npm run start:native`.
+
+| Method | Path | Success | Behavior |
+| --- | --- | --- | --- |
+| GET | / | 200 | Welcome JSON |
+| GET | /api/health | 200 | Status, uptime, platform, ISO timestamp |
+| GET | /api/users | 200 | List mock users |
+| GET | /api/users/:id | 200 | Read one user |
+| POST | /api/users | 201 | Create user; Location header points to its URL |
+| PUT | /api/users/:id | 200 | Replace name and email |
+| DELETE | /api/users/:id | 204 | Delete user; empty body |
+
+POST and PUT accept only `{ "name": "...", "email": "..." }`. Names are trimmed
+and must contain 1–100 characters. Emails are trimmed, lowercased, checked for a
+basic email format and limited to 254 characters. Extra fields are rejected.
+IDs must be positive safe integers. PUT replaces both fields.
+
+The JSON body limit is 16kb. Invalid inputs or JSON return 400; unknown users and
+routes return 404; duplicate email addresses return 409; oversized bodies return
+413. Errors use `{ error: { code, message }, requestId }`; unexpected internal
+errors return a generic 500 message.
+
+Each request receives a server-generated `X-Request-Id`. Completion logs are JSON
+with ISO timestamp, request ID, method, path, response status and elapsed
+milliseconds. Headers, bodies and query strings are excluded. Each app has its own
+mock user store, which resets on restart. These learning routes have no authentication.
+The optional API-key integration route is deferred until an integration is specified.
+
+```sh
+curl -i http://127.0.0.1:3000/api/health
+curl -i -X POST http://127.0.0.1:3000/api/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Grace Hopper","email":"grace@example.com"}'
+curl -i http://127.0.0.1:3000/api/users/2
+curl -i -X PUT http://127.0.0.1:3000/api/users/2 \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Rear Admiral Hopper","email":"hopper@example.com"}'
+curl -i -X DELETE http://127.0.0.1:3000/api/users/2
+```
+
+In Postman, set POST/PUT Body to raw JSON and use the same URLs and payloads.
+The examples assume a fresh store, where the first created user has ID 2.
+
+See [checkpoint verification](docs/checkpoints.md) for stage commits and CI runs.
