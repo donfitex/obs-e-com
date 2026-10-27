@@ -31,8 +31,7 @@ npm run check
 ```
 
 Source lives in `src/`, automated checks in `tests/`, and generated output in
-`dist/`. See [architecture decisions](docs/architecture.md) and
-[repository reconnaissance](docs/reconnaissance.md).
+`dist/`. See [architecture decisions](docs/architecture.md).
 
 ## Native HTTP learning server (stage 1)
 
